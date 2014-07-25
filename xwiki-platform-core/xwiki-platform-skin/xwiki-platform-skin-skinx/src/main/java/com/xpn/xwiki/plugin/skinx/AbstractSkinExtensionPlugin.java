@@ -33,6 +33,9 @@ import org.slf4j.LoggerFactory;
 
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.api.Api;
+import com.xpn.xwiki.internal.cache.rendering.CachedItem;
+import com.xpn.xwiki.internal.cache.rendering.CachedItem.UsedExtension;
+import com.xpn.xwiki.internal.cache.rendering.RenderingCacheAware;
 import com.xpn.xwiki.plugin.XWikiDefaultPlugin;
 import com.xpn.xwiki.plugin.XWikiPluginInterface;
 
@@ -55,7 +58,7 @@ import com.xpn.xwiki.plugin.XWikiPluginInterface;
  * @see LinkExtensionPlugin
  * @version $Id$
  */
-public abstract class AbstractSkinExtensionPlugin extends XWikiDefaultPlugin
+public abstract class AbstractSkinExtensionPlugin extends XWikiDefaultPlugin implements RenderingCacheAware
 {
     /** Log object to log messages in this class. */
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractSkinExtensionPlugin.class);
@@ -326,5 +329,18 @@ public abstract class AbstractSkinExtensionPlugin extends XWikiDefaultPlugin
         String hook = "<!-- " + this.getClass().getCanonicalName() + " -->";
         String result = content.replaceFirst(hook, getImportString(context));
         return result;
+    }
+
+    @Override
+    public UsedExtension getCacheResources(XWikiContext context) {
+        return new CachedItem.UsedExtension(getPulledResources(context),
+                       new HashMap<String, Map<String, Object>>(getParametersMap(context)));
+    }
+
+    @Override
+    public void restoreCacheResources(XWikiContext context,
+                   UsedExtension extension) {
+        getPulledResources(context).addAll(extension.resources);
+        getParametersMap(context).putAll(extension.parameters);
     }
 }
