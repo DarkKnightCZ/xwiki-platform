@@ -32,6 +32,8 @@
   <description>XWiki Platform - Display - Macro</description>
   <properties>
     <xwiki.jacoco.instructionRatio>0.80</xwiki.jacoco.instructionRatio>
+    <test>none</test>
+    <failIfNoTests>false</failIfNoTests>
   </properties>
   <dependencies>
     <dependency>
@@ -131,6 +133,11 @@
       <artifactId>xwiki-rendering-test</artifactId>
       <version>${rendering.version}</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+    	<groupId>com.tieto.j2ee.xwiki</groupId>
+    	<artifactId>xwiki-cache-observer</artifactId>
+    	<version>0.0.4-SNAPSHOT</version>
     </dependency>
   </dependencies>
   <build>

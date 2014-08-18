@@ -45,6 +45,8 @@ import org.xwiki.rendering.macro.MacroExecutionException;
 import org.xwiki.rendering.macro.display.DisplayMacroParameters;
 import org.xwiki.rendering.transformation.MacroTransformationContext;
 
+import com.tieto.j2ee.xwiki.cacheobserver.CacheObserver;
+
 /**
  * @version $Id$
  * @since 3.4M1
@@ -65,6 +67,12 @@ public class DisplayMacro extends AbstractMacro<DisplayMacroParameters>
      */
     @Inject
     private DocumentAccessBridge documentAccessBridge;
+
+    /**
+     * Used to access document content and check view access right.
+     */
+    @Inject
+    private CacheObserver cacheObserver;
 
     /**
      * Used to transform the passed document reference macro parameter to a typed {@link DocumentReference} object.
@@ -165,6 +173,9 @@ public class DisplayMacro extends AbstractMacro<DisplayMacroParameters>
         String source = this.defaultEntityReferenceSerializer.serialize(includedReference);
         metadata.getMetaData().addMetaData(MetaData.SOURCE, source);
         metadata.getMetaData().addMetaData(MetaData.BASE, source);
+
+        // Step 5: Register to cache observer
+        cacheObserver.registerHandler(this.documentAccessBridge.getCurrentDocumentReference(), includedReference.toString());
 
         return Arrays.<Block> asList(metadata);
     }
